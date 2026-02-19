@@ -1,5 +1,5 @@
 public enum Status {
-    CONFIRMEDED,
+    CONFIRMED,
     PAID,
     DRAFT
 }

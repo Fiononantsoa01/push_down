@@ -6,8 +6,9 @@ public class Main {
 
         DataRetriever dr = new DataRetriever();
         List<InvoiceTotal> totals = dr.findInvoiceTotals();
-
         totals.forEach(System.out::println);
+        List<InvoiceTotal> totalsConfirmedAndPaid= dr.findCOnfirmdedAndPaidInvoiceTotals();
+        totalsConfirmedAndPaid.forEach(System.out::println);
     }
 
 }
