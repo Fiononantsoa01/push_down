@@ -13,6 +13,8 @@ public class Main {
         System.out.println(totalStatus);
         Double weight=dr.computeWeightedTurnover();
         System.out.println(weight);
+        List<InvoiceTaxSummary> invoiceTaxSummaries = dr.findInvoiceTaxSummaries();
+        System.out.println(invoiceTaxSummaries);
 
     }
 

@@ -138,5 +138,38 @@ public class DataRetriever {
             throw new RuntimeException("Error during the compute weight ", e);
         }
     }
+        public  List<InvoiceTaxSummary> findInvoiceTaxSummaries(){
+        DBConnection dbConnection = new DBConnection();
+        Connection connection = dbConnection.getConnection();
+        List<InvoiceTaxSummary> invoiceTaxSummaries = new ArrayList<>();
+        try {
+            PreparedStatement ps= connection.prepareStatement(
+                    """
+            SELECT
+                i.id AS invoice_id,
+                COALESCE(SUM(il.quantity * il.unit_price), 0) AS total_ht,
+                COALESCE(SUM(il.quantity * il.unit_price), 0) * (tc.rate / 100) AS total_tva,
+                COALESCE(SUM(il.quantity * il.unit_price), 0) * (1 + tc.rate / 100) AS total_ttc
+            FROM invoice i
+            LEFT JOIN invoice_line il ON i.id = il.invoice_id
+            CROSS JOIN (SELECT rate FROM tax_config WHERE label = 'TVA STANDARD') tc
+            GROUP BY i.id, tc.rate
+            ORDER BY i.id;
+"""
+            );
+            ResultSet rs= ps.executeQuery();
+            while (rs.next()){
+                InvoiceTaxSummary invoiceTaxSummary=new InvoiceTaxSummary();
+                invoiceTaxSummary.setId(rs.getInt("invoice_id"));
+                invoiceTaxSummary.setHT(rs.getBigDecimal("total_ht"));
+                invoiceTaxSummary.setTVA(rs.getBigDecimal("total_tva"));
+                invoiceTaxSummary.setTTC(rs.getBigDecimal("total_ttc"));
+                invoiceTaxSummaries.add(invoiceTaxSummary);
+            }
+            return invoiceTaxSummaries;
+        }catch (Exception e){
+            throw new RuntimeException("Error fetching invoice tax summaries", e);
+        }
+        }
 
 }
