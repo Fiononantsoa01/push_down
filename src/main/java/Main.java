@@ -11,6 +11,8 @@ public class Main {
         totalsConfirmedAndPaid.forEach(System.out::println);
         InvoiceStatusTotals totalStatus = dr.computeStatusTotals();
         System.out.println(totalStatus);
+        Double weight=dr.computeWeightedTurnover();
+        System.out.println(weight);
 
     }
 

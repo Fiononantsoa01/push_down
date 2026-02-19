@@ -109,5 +109,34 @@ public class DataRetriever {
                throw new RuntimeException("Error fetching invoice  total by status", e);
            }
        }
+    public Double computeWeightedTurnover() {
+           DBConnection dbConnection = new DBConnection();
+           Connection connection = dbConnection.getConnection();
+        try (
+             PreparedStatement ps = connection.prepareStatement("""
+             SELECT SUM(
+                 il.quantity * il.unit_price * 
+                 CASE i.status
+                     WHEN 'PAID'      THEN 1.0
+                     WHEN 'CONFIRMED' THEN 0.5
+                     WHEN 'DRAFT'     THEN 0.0
+                     ELSE 0.0
+                 END
+             ) AS weighted_ca
+             FROM invoice i
+             JOIN invoice_line il ON i.id = il.invoice_id
+             """)) {
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                BigDecimal result = rs.getBigDecimal("weighted_ca");
+                return result != null ? result.doubleValue() : 0.0;
+            }
+            return 0.0;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error during the compute weight ", e);
+        }
+    }
 
 }
