@@ -45,7 +45,7 @@ public class DataRetriever {
 
            return totals;
        }
-       public List<InvoiceTotal>findCOnfirmdedAndPaidInvoiceTotals() {
+       public List<InvoiceTotal>findConfirmedAndPaidInvoiceTotals() {
            DBConnection dbConnection = new DBConnection();
            Connection connection = dbConnection.getConnection();
            List<InvoiceTotal> totaleConfirmedAndPaid = new ArrayList<>();
@@ -75,6 +75,38 @@ public class DataRetriever {
                return totaleConfirmedAndPaid;
            }catch (Exception e){
                throw new RuntimeException("Error fetching invoice totals confirmed and paid", e);
+           }
+       }
+       public InvoiceStatusTotals computeStatusTotals(){
+           DBConnection dbConnection = new DBConnection();
+           Connection connection = dbConnection.getConnection();
+           InvoiceStatusTotals totals = new InvoiceStatusTotals();
+           try {
+               PreparedStatement ps= connection.prepareStatement(
+                       """
+                                SELECT 
+               i.status,
+               SUM(il.quantity * il.unit_price) AS total
+        FROM invoice i
+        JOIN invoice_line il ON i.id = il.invoice_id
+        GROUP BY i.status
+"""
+               );
+               ResultSet rs= ps.executeQuery();
+               while (rs.next()){
+                   if(rs.getString("status").equals("CONFIRMED")){
+                       totals.setTotalConfirmed(rs.getBigDecimal("total"));
+                   }
+                  if(rs.getString("status").equals("PAID")){
+                      totals.setTotalPaid(rs.getBigDecimal("total"));
+                  }
+                  if(rs.getString("status").equals("DRAFT")){
+                      totals.setTotalDraft(rs.getBigDecimal("total"));
+                  }
+               }
+               return totals;
+           }catch (Exception e){
+               throw new RuntimeException("Error fetching invoice  total by status", e);
            }
        }
 
