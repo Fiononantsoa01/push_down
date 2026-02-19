@@ -1,16 +1,18 @@
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
 
-public class Invoice {
-    private  Integer id;
-    private  String customer_name;
-    private  Status invoice_status;
-    private List<InvoiceLine> invoice_lines;
+public class InvoiceTotal {
 
-    public Invoice(Integer id, String customer_name, Status invoice_status) {
+    private Integer id;
+    private String customerName;
+    private Status status; // enum
+    private BigDecimal total;
+
+    public InvoiceTotal(Integer id, String customerName,
+                        Status status, BigDecimal total) {
         this.id = id;
-        this.customer_name = customer_name;
-        this.invoice_status = invoice_status;
+        this.customerName = customerName;
+        this.status = status;
+        this.total = total;
     }
 
     public Integer getId() {
@@ -21,40 +23,36 @@ public class Invoice {
         this.id = id;
     }
 
-    public String getCustomer_name() {
-        return customer_name;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setCustomer_name(String customer_name) {
-        this.customer_name = customer_name;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public Status getInvoice_status() {
-        return invoice_status;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setInvoice_status(Status invoice_status) {
-        this.invoice_status = invoice_status;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Invoice invoice = (Invoice) o;
-        return Objects.equals(id, invoice.id) && Objects.equals(customer_name, invoice.customer_name) && invoice_status == invoice.invoice_status;
+    public BigDecimal getTotal() {
+        return total;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, customer_name, invoice_status);
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
+    public InvoiceTotal() {
+
     }
 
     @Override
     public String toString() {
-        return "Invoice{" +
-                "id=" + id +
-                ", customer_name='" + customer_name + '\'' +
-                ", invoice_status=" + invoice_status +
-                '}';
+        return id + " | " + customerName + " | " + total;
     }
 }
